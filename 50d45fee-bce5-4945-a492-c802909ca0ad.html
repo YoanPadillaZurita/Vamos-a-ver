@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <base target="_self">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda de Empeño Meneses - Compra y Venta en CUP</title>
+    <meta name="description" content="Tienda de Empeño Meneses - La mejor opción para empeñar y comprar artículos de valor en Cuba. Pagos en CUP.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            400: '#D4AF37',
+                            500: '#C5A028',
+                            600: '#B08D1F'
+                        },
+                        dark: {
+                            900: '#0f0f0f',
+                            800: '#1a1a1a',
+                            700: '#2d2d2d'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Georgia', 'Cambria', 'Times New Roman', 'serif'],
+                        sans: ['system-ui', '-apple-system', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-gold {
+            background: linear-gradient(135deg, #D4AF37 0%, #F4E5C2 50%, #D4AF37 100%);
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, #D4AF37 0%, #F4E5C2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .glass-effect {
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        .chat-message {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.2);
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-dark-900 text-gray-100 font-sans antialiased">
+    <!-- Header -->
+    <header class="fixed w-full top-0 z-50 glass-effect border-b border-gold-400/20">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="router.navigate('home')">
+                    <div class="w-10 h-10 gradient-gold rounded-full flex items-center justify-center">
+                        <i class="fas fa-gem text-dark-900 text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-serif font-bold text-gradient">Meneses</h1>
+                        <p class="text-xs text-gray-400">Tienda de Empeño</p>
+                    </div>
+                </div>
+                
+                <nav class="hidden md:flex items-center space-x-6">
+                    <button onclick="router.navigate('home')" class="nav-link hover:text-gold-400 transition-colors">Inicio</button>
+                    <button onclick="router.navigate('products')" class="nav-link hover:text-gold-400 transition-colors">Productos</button>
+                    <button onclick="router.navigate('categories')" class="nav-link hover:text-gold-400 transition-colors">Categorías</button>
+                    <button onclick="router.navigate('chat')" class="nav-link hover:text-gold-400 transition-colors relative">
+                        Chat
+                        <span id="chat-badge" class="absolute -top-2 -right-2 bg-red-500 text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
+                    </button>
+                </nav>
+
+                <div class="flex items-center space-x-4">
+                    <button onclick="router.navigate('cart')" class="relative p-2 hover:text-gold-400 transition-colors">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span id="cart-count" class="absolute -top-1 -right-1 bg-gold-500 text-dark-900 text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
+                    </button>
+                    
+                    <div id="user-section" class="hidden md:flex items-center space-x-3">
+                        <button onclick="router.navigate('login')" class="px-4 py-2 border border-gold-400 text-gold-400 rounded hover:bg-gold-400 hover:text-dark-900 transition-all">
+                            Iniciar Sesión
+                        </button>
+                    </div>
+
+                    <div id="user-logged" class="hidden items-center space-x-3">
+                        <span id="username-display" class="text-gold-400"></span>
+                        <button onclick="auth.logout()" class="text-sm text-gray-400 hover:text-white">Salir</button>
+                    </div>
+
+                    <button onclick="router.navigate('admin')" class="p-2 text-gray-500 hover:text-gold-400" title="Panel Administrador">
+                        <i class="fas fa-cog"></i>
+                    </button>
+
+                    <button class="md:hidden p-2" onclick="toggleMobileMenu()">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-dark-800 border-t border-gold-400/20">
+            <div class="px-4 py-2 space-y-2">
+                <button onclick="router.navigate('home')" class="block w-full text-left py-2 hover:text-gold-400">Inicio</button>
+                <button onclick="router.navigate('products')" class="block w-full text-left py-2 hover:text-gold-400">Productos</button>
+                <button onclick="router.navigate('categories')" class="block w-full text-left py-2 hover:text-gold-400">Categorías</button>
+                <button onclick="router.navigate('chat')" class="block w-full text-left py-2 hover:text-gold-400">Chat</button>
+                <button onclick="router.navigate('cart')" class="block w-full text-left py-2 hover:text-gold-400">Carrito</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-20 min-h-screen">
+        <!-- Home Section -->
+        <section id="home" class="page-section">
+            <div class="relative h-[600px] flex items-center justify-center overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-b from-dark-900 via-dark-800 to-dark-900"></div>
+                <div class="absolute inset-0 opacity-20" style="background-image: url('https://picsum.photos/1920/1080?random=gold'); background-size: cover;"></div>
+                
+                <div class="relative z-10 text-center px-4 max-w-4xl mx-auto">
+                    <h2 class="text-5xl md:text-7xl font-serif font-bold mb-6 text-gradient">Tienda de Empeño Meneses</h2>
+                    <p class="text-xl md:text-2xl text-gray-300 mb-8">La mejor opción para empeñar y comprar artículos de valor en Cuba</p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button onclick="router.navigate('products')" class="px-8 py-4 gradient-gold text-dark-900 font-bold rounded-lg hover:shadow-lg hover:shadow-gold-400/30 transition-all transform hover:scale-105">
+                            Ver Productos
+                        </button>
+                        <button onclick="router.navigate('categories')" class="px-8 py-4 border-2 border-gold-400 text-gold-400 font-bold rounded-lg hover:bg-gold-400 hover:text-dark-900 transition-all">
+                            Explorar Categorías
+                        </button>
+                    </div>
+                    
+                    <div class="mt-12 grid grid-cols-3 gap-8 text-center">
+                        <div>
+                            <div class="text-3xl font-bold text-gold-400" id="stat-products">0</div>
+                            <div class="text-sm text-gray-400">Productos</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold text-gold-400" id="stat-online">0</div>
+                            <div class="text-sm text-gray-400">En Línea</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold text-gold-400" id="stat-users">0</div>
+                            <div class="text-sm text-gray-400">Registrados</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Featured Products -->
+            <div class="container mx-auto px-4 py-16">
+                <h3 class="text-3xl font-serif font-bold text-center mb-12 text-gradient">Productos Destacados</h3>
+                <div id="featured-products" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+            </div>
+        </section>
+
+        <!-- Products Section -->
+        <section id="products" class="page-section hidden">
+            <div class="container mx-auto px-4 py-8">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+                    <h2 class="text-3xl font-serif font-bold text-gradient mb-4 md:mb-0">Todos los Productos</h2>
+                    <div class="flex gap-4">
+                        <select id="category-filter" onchange="filterProducts()" class="bg-dark-800 border border-gold-400/30 rounded px-4 py-2 text-white focus:outline-none focus:border-gold-400">
+                            <option value="all">Todas las categorías</option>
+                        </select>
+                        <input type="text" id="search-input" placeholder="Buscar productos..." onkeyup="filterProducts()" 
+                            class="bg-dark-800 border border-gold-400/30 rounded px-4 py-2 text-white focus:outline-none focus:border-gold-400 w-64">
+                    </div>
+                </div>
+                <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+            </div>
+        </section>
+
+        <!-- Categories Section -->
+        <section id="categories" class="page-section hidden">
+            <div class="container mx-auto px-4 py-8">
+                <h2 class="text-3xl font-serif font-bold text-center mb-12 text-gradient">Categorías</h2>
+                <div id="categories-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8"></div>
+            </div>
+        </section>
+
+        <!-- Cart Section -->
+        <section id="cart" class="page-section hidden">
+            <div class="container mx-auto px-4 py-8 max-w-4xl">
+                <h2 class="text-3xl font-serif font-bold text-gradient mb-8">Carrito de Compras</h2>
+                <div id="cart-content" class="bg-dark-800 rounded-lg p-6 border border-gold-400/20">
+                    <div id="cart-empty" class="text-center py-12 text-gray-400">
+                        <i class="fas fa-shopping-cart text-6xl mb-4 opacity-30"></i>
+                        <p>Tu carrito está vacío</p>
+                        <button onclick="router.navigate('products')" class="mt-4 text-gold-400 hover:underline">Ver productos</button>
+                    </div>
+                    <div id="cart-items" class="hidden space-y-4"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chat Section -->
+        <section id="chat" class="page-section hidden">
+            <div class="container mx-auto px-4 py-8 max-w-4xl h-[calc(100vh-120px)]">
+                <div class="bg-dark-800 rounded-lg border border-gold-400/20 h-full flex flex-col">
+                    <div class="p-4 border-b border-gold-400/20 flex justify-between items-center">
+                        <h2 class="text-xl font-bold text-gold-400">Chat en Tiempo Real</h2>
+                        <div class="flex items-center gap-2 text-sm text-gray-400">
+                            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                            <span id="chat-online-count">0 en línea</span>
+                        </div>
+                    </div>
+                    
+                    <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-hide">
+                        <div class="text-center text-gray-500 text-sm">Bienvenido al chat de Tienda Meneses</div>
+                    </div>
+
+                    <div id="chat-login-required" class="hidden p-4 border-t border-gold-400/20 text-center">
+                        <p class="text-gray-400 mb-3">Debes iniciar sesión para participar en el chat</p>
+                        <button onclick="router.navigate('login')" class="px-6 py-2 bg-gold-500 text-dark-900 rounded font-bold">Iniciar Sesión</button>
+                    </div>
+
+                    <div id="chat-input-area" class="hidden p-4 border-t border-gold-400/20 flex gap-2">
+                        <input type="text" id="chat-input" placeholder="Escribe un mensaje..." 
+                            class="flex-1 bg-dark-900 border border-gold-400/30 rounded px-4 py-2 text-white focus:outline-none focus:border-gold-400"
+                            onkeypress="if(event.key==='Enter') chat.sendMessage()">
+                        <button onclick="chat.sendMessage()" class="px-6 py-2 gradient-gold text-dark-900 rounded font-bold hover:shadow-lg transition-all">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Login Section -->
+        <section id="login" class="page-section hidden">
+            <div class="container mx-auto px-4 py-16 max-w-md">
+                <div class="bg-dark-800 rounded-lg p-8 border border-gold-400/20">
+                    <h2 class="text-2xl font-serif font-bold text-center mb-6 text-gradient">Iniciar Sesión</h2>
+                    <form onsubmit="auth.login(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">Usuario</label>
+                            <input type="text" name="username" required class="w-full bg-dark-900 border border-gold-400/30 rounded px-4 py-2 text-white focus:outline-none focus:border-gold-400">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">Contraseña</label>
+                            <input type="password" name="password" required class="w-full bg-dark-900 border border-gold-400/30 rounded px-4 py-2 text-white focus:outline-none focus:border-gold-400">
+                        </div>
+                        <button type="submit" class="w-full py-3 gradient-gold text-dark-900 font-bold rounded hover:shadow-lg transition-all">
+                            Entrar
+                        </button>
+                    </form>
+                    <p class="mt-4 text-center text-gray-400">
+                        ¿No tienes cuenta? <button onclick="router.navigate('register')" class="text-gold-400 hover:underline">Regístrate</button>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Register Section -->
+        <section id="register" class="page-section hidden">
+            <div class="container mx-auto px-4 py-16 max-w-md">
+                <div class="bg-dark-800 rounded-lg p-8 border border-gold-400/20">
+                    <h2 class="text-2xl font-serif font-bold text-center mb-6 text-gradient">Crear Cuenta</h2>
+                    <form onsubmit="auth.register(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">Nombre completo</label>
+                            <input type="text" name="fullname" required class="w-full bg-dark-900 border border-gold-400/30 rounded px-4 py-2 text-white focus:outline-none focus:border-gold-400">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">Usuario</label>
+                            <input type="text" name="username" required class="w-full bg-dark-900 border border-gold-400/30 rounded px-4 py-2 text-white focus:outline-none focus:border-gold-400">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">Contraseña</label>
+                            <input type="password" name="password" required minlength="6" class="w-full bg-dark-900 border border-gold-400/30 rounded px-4 py-2 text-white focus:outline-none focus:border-gold-400">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">Teléfono</label>
+                            <input type="tel" name="phone" placeholder="+53xxxxxxxxx" required class="w-full bg-dark-900 border border-gold-400/30 rounded px-4 py-2 text-white focus:outline-none focus:border-gold-400">
+                        </div>
+                        <button type="submit" class="w-full py-3 gradient-gold text-dark-900 font-bold rounded hover:shadow-lg transition-all">
+                            Registrarse
+                        </button>
+                    </form>
+                    <p class="mt-4 text-center text-gray-400">
+                        ¿Ya tienes cuenta? <button onclick="router.navigate('login')" class="text-gold-400 hover:underline">Inicia sesión</button>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Admin Section -->
+        <section id="admin" class="page-section hidden">
+            <div class="container mx-auto px-4 py-8">
+                <div id="admin-login" class="max-w-md mx-auto bg-dark-800 rounded-lg p-8 border border-gold-400/20">
+                    <h2 class="text-2xl font-serif font-bold text-center mb-6 text-gradient">Panel de Administrador</h2>
+                    <form onsubmit="admin.login(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">Contraseña de Administrador</label>
+                            <input type="password" id="admin-password" required class="w-full bg-dark-900 border border-gold-400/30 rounded px-4 py-2 text-white focus:outline-none focus:border-gold-400">
+                        </div>
+                        <button type="submit" class="w-full py-3 gradient-gold text-dark-900 font-bold rounded hover:shadow-lg transition-all">
+                            Acceder
+                        </button>
+                    </form>
+                </div>
+
+                <div id="admin-panel" class="hidden">
+                    <div class="flex justify-between items-center mb-8">
+                        <h2 class="text-3xl font-serif font-bold text-gradient">Panel de Administración</h2>
+                        <button onclick="admin.logout()" class="px-4 py-2 border border-red-500 text-red-500 rounded hover:bg-red-500 hover:text-white transition-all">
+                            Cerrar Sesión Admin
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div class="bg-dark-800 p-6 rounded-lg border border-gold-400/20">
+                            <div class="text-3xl font-bold text-gold-400" id="admin-total-products">0</div>
+                            <div class="text-gray-400">Total Productos</div>
+                        </div>
+                        <div class="bg-dark-800 p-6 rounded-lg border border-gold-400/20">
+                            <div class="text-3xl font-bold text-gold-400" id="admin-total-users">0</div>
+                            <div class="text-gray-400">Usuarios Registrados</div>
+                        </div>
+                        <div class="bg-dark-800 p-6 rounded-lg border border-gold-400/20">
+                            <div class="text-3xl font-bold text-gold-400" id="admin-online-users">0</div>
+                            <div class="text-gray-400">Usuarios En Línea</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-dark-800 rounded-lg border border-gold-400/20 overflow-hidden mb-8">
+                        <div class="p-4 border-b border-gold-400/20 flex justify-between items-center">
+                            <h3 class="text-xl font-bold text-gold-400">Gestión de Productos</h3>
+                            <button onclick="admin.showAddProduct()" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-all">
+                                <i class="fas fa-plus mr-2"></i>Añadir Producto
+                            </button>
+                        </div>
+                        
+                        <div id="add-product-form" class="hidden p-4 border-b border-gold-400/20 bg-dark-900">
+                            <form onsubmit="admin.addProduct(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <input type="text" name="name" placeholder="Nombre del producto" required class="bg-dark-800 border border-gold-400/30 rounded px-4 py-2 text-white">
+                                <input type="number" name="price" placeholder="Precio en CUP" required class="bg-dark-800 border border-gold-400/30 rounded px-4 py-2 text-white">
+                                <select name="category" required class="bg-dark-800 border border-gold-400/30 rounded px-4 py-2 text-white">
+                                    <option value="">Seleccionar categoría</option>
+                                </select>
+                                <input type="url" name="image" placeholder="URL de la imagen" class="bg-dark-800 border border-gold-400/30 rounded px-4 py-2 text-white">
+                                <textarea name="description" placeholder="Descripción" required class="md:col-span-2 bg-dark-800 border border-gold-400/30 rounded px-4 py-2 text-white h-24"></textarea>
+                                <div class="md:col-span-2 flex gap-2">
+                                    <button type="submit" class="px-6 py-2 gradient-gold text-dark-900 rounded font-bold">Guardar</button>
+                                    <button type="button" onclick="document.getElementById('add-product-form').classList.add('hidden')" class="px-6 py-2 border border-gray-600 text-gray-400 rounded hover:border-white hover:text-white">Cancelar</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-dark-900">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-gold-400">Producto</th>
+                                        <th class="px-4 py-3 text-left text-gold-400">Categoría</th>
+                                        <th class="px-4 py-3 text-left text-gold-400">Precio (CUP)</th>
+                                        <th class="px-4 py-3 text-left text-gold-400">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-products-list"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="bg-dark-800 rounded-lg border border-gold-400/20 p-6">
+                        <h3 class="text-xl font-bold text-gold-400 mb-4">Configuración de Moneda</h3>
+                        <div class="flex items-center gap-4">
+                            <label class="text-gray-400">Moneda actual:</label>
+                            <select id="currency-setting" onchange="admin.updateCurrency(this.value)" class="bg-dark-900 border border-gold-400/30 rounded px-4 py-2 text-white">
+                                <option value="CUP">CUP (Peso Cubano)</option>
+                                <option value="USD">USD (Dólar)</option>
+                                <option value="EUR">EUR (Euro)</option>
+                                <option value="MLC">MLC (Moneda Libremente Convertible)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark-800 border-t border-gold-400/20 mt-16">
+        <div class="container mx-auto px-4 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-8 h-8 gradient-gold rounded-full flex items-center justify-center">
+                            <i class="fas fa-gem text-dark-900 text-sm"></i>
+                        </div>
+                        <h3 class="text-lg font-serif font-bold text-gradient">Meneses</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">Tu tienda de empeño de confianza en Cuba. Compra y venta de artículos de valor con las mejores condiciones.</p>
+                </div>
+                
+                <div>
+                    <h4 class="text-gold-400 font-bold mb-4">Enlaces Rápidos</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><button onclick="router.navigate('home')" class="hover:text-gold-400">Inicio</button></li>
+                        <li><button onclick="router.navigate('products')" class="hover:text-gold-400">Productos</button></li>
+                        <li><button onclick="router.navigate('categories')" class="hover:text-gold-400">Categorías</button></li>
+                        <li><button onclick="router.navigate('chat')" class="hover:text-gold-400">Chat</button></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-gold-400 font-bold mb-4">Contacto</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><i class="fab fa-whatsapp text-green-500 mr-2"></i>+53 55483286</li>
+                        <li><i class="fas fa-map-marker-alt text-gold-400 mr-2"></i>Cuba</li>
+                        <li><i class="fas fa-clock text-gold-400 mr-2"></i>Lun-Vie: 9:00 - 18:00</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-gold-400 font-bold mb-4">Estadísticas</h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">En línea:</span>
+                            <span class="text-gold-400" id="footer-online">0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Registrados:</span>
+                            <span class="text-gold-400" id="footer-registered">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gold-400/20 mt-8 pt-8 text-center text-sm text-gray-500">
+                <p>&copy; 2024 Tienda de Empeño Meneses. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-dark-800 border border-gold-400 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+        <span id="toast-message"></span>
+    </div>
+
+    <script>
+        // Data Layer
+        const storeData = {
+            categories: [
+                { "id": "joyas", "name": "Joyas y Relojes", "icon": "fa-gem", "image": "https://picsum.photos/400/300?random=1" },
+                { "id": "electronica", "name": "Electrónica", "icon": "fa-laptop", "image": "https://picsum.photos/400/300?random=2" },
+                { "id": "electrodomesticos", "name": "Electrodomésticos", "icon": "fa-blender", "image": "https://picsum.photos/400/300?random=3" },
+                { "id": "moviles", "name": "Móviles", "icon": "fa-mobile-alt", "image": "https://picsum.photos/400/300?random=4" },
+                { "id": "herramientas", "name": "Herramientas", "icon": "fa-tools", "image": "https://picsum.photos/400/300?random=5" },
+                { "id": "muebles", "name": "Muebles", "icon": "fa-couch", "image": "https://picsum.photos/400/300?random=6" }
+            ],
+            products: [
+                { "id": 1, "name": "Cadena de Oro 18k", "category": "joyas", "price": 25000, "image": "https://picsum.photos/300/300?random=10", "description": "Cadena de oro macizo 18k, 20 gramos" },
+                { "id": 2, "name": "iPhone 13 Pro", "category": "moviles", "price": 45000, "image": "https://picsum.photos/300/300?random=11", "description": "128GB, buen estado, batería 90%" },
+                { "id": 3, "name": "Laptop Dell i5", "category": "electronica", "price": 32000, "image": "https://picsum.photos/300/300?random=12", "description": "8GB RAM, 256GB SSD, Windows 11" },
+                { "id": 4, "name": "Nevera Samsung", "category": "electrodomesticos", "price": 28000, "image": "https://picsum.photos/300/300?random=13", "description": "No Frost, 300L, como nueva" },
+                { "id": 5, "name": "Reloj Rolex", "category": "joyas", "price": 65000, "image": "https://picsum.photos/300/300?random=14", "description": "Original, con certificado" },
+                { "id": 6, "name": "Taladro Bosch", "category": "herramientas", "price": 8500, "image": "https://picsum.photos/300/300?random=15", "description": "Profesional, poco uso" },
+                { "id": 7, "name": "Sofá 3 plazas", "category": "muebles", "price": 12000, "image": "https://picsum.photos/300/300?random=16", "description": "Cuero sintético, color negro" },
+                { "id": 8, "name": "Samsung S21", "category": "moviles", "price": 28000, "image": "https://picsum.photos/300/300?random=17", "description": "256GB, cámara excelente" }
+            ],
+            currency: "CUP",
+            adminPasswordHash: "93091414047", // En producción esto debería estar hasheado
+            whatsappNumber: "5355483286"
+        };
+
+        // State Management
+        const state = {
+            currentUser: JSON.parse(localStorage.getItem('currentUser')) || null,
+            cart: JSON.parse(localStorage.getItem('cart')) || [],
+            users: JSON.parse(localStorage.getItem('users')) || [],
+            messages: JSON.parse(localStorage.getItem('messages')) || [],
+            isAdmin: sessionStorage.getItem('isAdmin') === 'true',
+            onlineUsers: new Set()
+        };
+
+        // Initialize data
+        if (!localStorage.getItem('storeData')) {
+            localStorage.setItem('storeData', JSON.stringify(storeData));
+        } else {
+            const saved = JSON.parse(localStorage.getItem('storeData'));
+            Object.assign(storeData, saved);
+        }
+
+        // Router
+        const router = {
+            navigate: (page) => {
+                document.querySelectorAll('.page-section').forEach(section => {
+                    section.classList.add('hidden');
+                });
+                document.getElementById(page).classList.remove('hidden');
+                window.scrollTo(0, 0);
+                
+                if (page === 'products') renderProducts();
+                if (page === 'categories') renderCategories();
+                if (page === 'cart') renderCart();
+                if (page === 'chat') chat.init();
+                if (page === 'admin') admin.init();
+                if (page === 'home') renderFeaturedProducts();
+                
+                document.getElementById('mobile-menu').classList.add('hidden');
+            }
+        };
+
+        // Render Functions
+        function renderProductCard(product) {
+            return `
+                <div class="product-card bg-dark-800 rounded-lg overflow-hidden border border-gold-400/20 transition-all duration-300">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover" loading="lazy">
+                        <div class="absolute top-2 right-2 bg-gold-500 text-dark-900 px-2 py-1 rounded text-sm font-bold">
+                            ${product.price} ${storeData.currency}
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-bold text-white mb-2">${product.name}</h3>
+                        <p class="text-gray-400 text-sm mb-4 line-clamp-2">${product.description}</p>
+                        <div class="flex gap-2">
+                            <button onclick="cart.add(${product.id})" class="flex-1 py-2 gradient-gold text-dark-900 rounded font-bold hover:shadow-lg transition-all">
+                                Añadir al carrito
+                            </button>
+                            <button onclick="whatsapp.inquiry('${product.name}')" class="px-3 py-2 border border-green-500 text-green-500 rounded hover:bg-green-500 hover:text-white transition-all" title="Consultar por WhatsApp">
+                                <i class="fab fa-whatsapp"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderFeaturedProducts() {
+            const featured = storeData.products.slice(0, 4);
+            document.getElementById('featured-products').innerHTML = featured.map(renderProductCard).join('');
+            updateStats();
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('products-grid');
+            const filter = document.getElementById('category-filter').value;
+            const search = document.getElementById('search-input').value.toLowerCase();
+            
+            let filtered = storeData.products;
+            if (filter !== 'all') filtered = filtered.filter(p => p.category === filter);
+            if (search) filtered = filtered.filter(p => p.name.toLowerCase().includes(search) || p.description.toLowerCase().includes(search));
+            
+            grid.innerHTML = filtered.map(renderProductCard).join('');
+        }
+
+        function renderCategories() {
+            const grid = document.getElementById('categories-grid');
+            grid.innerHTML = storeData.categories.map(cat => `
+                <div class="bg-dark-800 rounded-lg overflow-hidden border border-gold-400/20 hover:border-gold-400 transition-all cursor-pointer group" onclick="filterByCategory('${cat.id}')">
+                    <div class="h-48 overflow-hidden">
+                        <img src="${cat.image}" alt="${cat.name}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div class="p-6 text-center">
+                        <i class="fas ${cat.icon} text-3xl text-gold-400 mb-3"></i>
+                        <h3 class="text-xl font-bold text-white">${cat.name}</h3>
+                        <p class="text-gray-400 mt-2">${storeData.products.filter(p => p.category === cat.id).length} productos</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cart-items');
+            const empty = document.getElementById('cart-empty');
+            
+            if (state.cart.length === 0) {
+                container.classList.add('hidden');
+                empty.classList.remove('hidden');
+                return;
+            }
+            
+            empty.classList.add('hidden');
+            container.classList.remove('hidden');
+            
+            let total = 0;
+            container.innerHTML = state.cart.map(item => {
+                const product = storeData.products.find(p => p.id === item.id);
+                total += product.price * item.quantity;
+                return `
+                    <div class="flex items-center gap-4 bg-dark-900 p-4 rounded-lg">
+                        <img src="${product.image}" alt="${product.name}" class="w-20 h-20 object-cover rounded">
+                        <div class="flex-1">
+                            <h4 class="font-bold text-white">${product.name}</h4>
+                            <p class="text-gold-400">${product.price} ${storeData.currency}</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="cart.update(${item.id}, -1)" class="w-8 h-8 rounded bg-dark-800 hover:bg-gold-400 hover:text-dark-900 transition-colors">-</button>
+                            <span class="w-8 text-center">${item.quantity}</span>
+                            <button onclick="cart.update(${item.id}, 1)" class="w-8 h-8 rounded bg-dark-800 hover:bg-gold-400 hover:text-dark-900 transition-colors">+</button>
+                        </div>
+                        <button onclick="cart.remove(${item.id})" class="text-red-500 hover:text-red-400 px-2">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+            
+            container.innerHTML += `
+                <div class="border-t border-gold-400/20 pt-4 mt-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-xl font-bold">Total:</span>
+                        <span class="text-2xl font-bold text-gold-400">${total} ${storeData.currency}</span>
+                    </div>
+                    <button onclick="cart.checkout()" class="w-full py-3 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 transition-all flex items-center justify-center gap-2">
+                        <i class="fab fa-whatsapp"></i>
+                        Comprar por WhatsApp
+                    </button>
+                </div>
+            `;
+        }
+
+        function updateStats() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const online = Math.floor(Math.random() * 5) + 1; // Simulación de usuarios online
+            
+            document.getElementById('stat-products').textContent = storeData.products.length;
+            document.getElementById('stat-online').textContent = online;
+            document.getElementById('stat-users').textContent = users.length;
+            document.getElementById('footer-online').textContent = online;
+            document.getElementById('footer-registered').textContent = users.length;
+        }
+
+        // Filter Functions
+        function filterProducts() {
+            renderProducts();
+        }
+
+        function filterByCategory(categoryId) {
+            router.navigate('products');
+            document.getElementById('category-filter').value = categoryId;
+            renderProducts();
+        }
+
+        // Cart System
+        const cart = {
+            add: (productId) => {
+                const existing = state.cart.find(item => item.id === productId);
+                if (existing) {
+                    existing.quantity++;
+                } else {
+                    state.cart.push({ id: productId, quantity: 1 });
+                }
+                localStorage.setItem('cart', JSON.stringify(state.cart));
+                cart.updateUI();
+                showToast('Producto añadido al carrito');
+            },
+            update: (productId, delta) => {
+                const item = state.cart.find(item => item.id === productId);
+                if (item) {
+                    item.quantity += delta;
+                    if (item.quantity <= 0) {
+                        cart.remove(productId);
+                        return;
+                    }
+                    localStorage.setItem('cart', JSON.stringify(state.cart));
+                    renderCart();
+                    cart.updateUI();
+                }
+            },
+            remove: (productId) => {
+                state.cart = state.cart.filter(item => item.id !== productId);
+                localStorage.setItem('cart', JSON.stringify(state.cart));
+                renderCart();
+                cart.updateUI();
+            },
+            updateUI: () => {
+                const count = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+                const badge = document.getElementById('cart-count');
+                if (count > 0) {
+                    badge.textContent = count;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            },
+            checkout: () => {
+                const items = state.cart.map(item => {
+                    const product = storeData.products.find(p => p.id === item.id);
+                    return `${item.quantity}x ${product.name} (${product.price * item.quantity} ${storeData.currency})`;
+                }).join('%0A');
+                
+                const total = state.cart.reduce((sum, item) => {
+                    const product = storeData.products.find(p => p.id === item.id);
+                    return sum + (product.price * item.quantity);
+                }, 0);
+                
+                const message = `¡Hola! Quiero comprar:%0A%0A${items}%0A%0ATotal: ${total} ${storeData.currency}%0A%0AMi usuario: ${state.currentUser ? state.currentUser.username : 'Invitado'}`;
+                window.open(`https://wa.me/${storeData.whatsappNumber}?text=${message}`, '_blank');
+            }
+        };
+
+        // WhatsApp Integration
+        const whatsapp = {
+            inquiry: (productName) => {
+                const message = `¡Hola! Me interesa el producto: ${productName}`;
+                window.open(`https://wa.me/${storeData.whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
+            }
+        };
+
+        // Auth System
+        const auth = {
+            register: (e) => {
+                e.preventDefault();
+                const form = e.target;
+                const user = {
+                    fullname: form.fullname.value,
+                    username: form.username.value,
+                    password: form.password.value,
+                    phone: form.phone.value,
+                    registeredAt: new Date().toISOString()
+                };
+                
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                if (users.find(u => u.username === user.username)) {
+                    showToast('El usuario ya existe');
+                    return;
+                }
+                
+                users.push(user);
+                localStorage.setItem('users', JSON.stringify(users));
+                showToast('Registro exitoso');
+                router.navigate('login');
+            },
+            login: (e) => {
+                e.preventDefault();
+                const form = e.target;
+                const username = form.username.value;
+                const password = form.password.value;
+                
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                const user = users.find(u => u.username === username && u.password === password);
+                
+                if (user) {
+                    state.currentUser = user;
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                    auth.updateUI();
+                    showToast('Bienvenido, ' + user.fullname);
+                    router.navigate('home');
+                } else {
+                    showToast('Usuario o contraseña incorrectos');
+                }
+            },
+            logout: () => {
+                state.currentUser = null;
+                localStorage.removeItem('currentUser');
+                auth.updateUI();
+                router.navigate('home');
+            },
+            updateUI: () => {
+                const userSection = document.getElementById('user-section');
+                const userLogged = document.getElementById('user-logged');
+                const usernameDisplay = document.getElementById('username-display');
+                
+                if (state.currentUser) {
+                    userSection.classList.add('hidden');
+                    userLogged.classList.remove('hidden');
+                    userLogged.classList.add('flex');
+                    usernameDisplay.textContent = state.currentUser.username;
+                } else {
+                    userSection.classList.remove('hidden');
+                    userLogged.classList.add('hidden');
+                    userLogged.classList.remove('flex');
+                }
+            }
+        };
+
+        // Chat System
+        const chat = {
+            init: () => {
+                const messagesContainer = document.getElementById('chat-messages');
+                const inputArea = document.getElementById('chat-input-area');
+                const loginRequired = document.getElementById('chat-login-required');
+                
+                if (!state.currentUser) {
+                    inputArea.classList.add('hidden');
+                    loginRequired.classList.remove('hidden');
+                } else {
+                    inputArea.classList.remove('hidden');
+                    loginRequired.classList.add('hidden');
+                }
+                
+                chat.loadMessages();
+                chat.updateOnlineCount();
+                
+                // Poll for new messages
+                if (window.chatInterval) clearInterval(window.chatInterval);
+                window.chatInterval = setInterval(() => {
+                    chat.loadMessages();
+                    chat.updateOnlineCount();
+                }, 3000);
+            },
+            loadMessages: () => {
+                const messages = JSON.parse(localStorage.getItem('messages')) || [];
+                const container = document.getElementById('chat-messages');
+                const currentCount = container.children.length;
+                
+                if (messages.length !== currentCount - 1) { // -1 for welcome message
+                    container.innerHTML = '<div class="text-center text-gray-500 text-sm">Bienvenido al chat de Tienda Meneses</div>';
+                    messages.forEach(msg => {
+                        container.appendChild(chat.createMessageElement(msg));
+                    });
+                    container.scrollTop = container.scrollHeight;
+                }
+            },
+            createMessageElement: (msg) => {
+                const div = document.createElement('div');
+                const isMe = state.currentUser && msg.username === state.currentUser.username;
+                div.className = `chat-message flex ${isMe ? 'justify-end' : 'justify-start'}`;
+                div.innerHTML = `
+                    <div class="max-w-[70%] ${isMe ? 'bg-gold-500 text-dark-900' : 'bg-dark-700 text-white'} rounded-lg px-4 py-2">
+                        <div class="text-xs opacity-70 mb-1">${msg.username} • ${new Date(msg.time).toLocaleTimeString()}</div>
+                        <div>${msg.text}</div>
+                    </div>
+                `;
+                return div;
+            },
+            sendMessage: () => {
+                const input = document.getElementById('chat-input');
+                const text = input.value.trim();
+                if (!text || !state.currentUser) return;
+                
+                const message = {
+                    username: state.currentUser.username,
+                    text: text,
+                    time: new Date().toISOString()
+                };
+                
+                const messages = JSON.parse(localStorage.getItem('messages')) || [];
+                messages.push(message);
+                localStorage.setItem('messages', JSON.stringify(messages));
+                
+                input.value = '';
+                chat.loadMessages();
+            },
+            updateOnlineCount: () => {
+                // Simulación de usuarios online basado en actividad reciente
+                const count = Math.floor(Math.random() * 8) + 2;
+                document.getElementById('chat-online-count').textContent = count + ' en línea';
+            }
+        };
+
+        // Admin System
+        const admin = {
+            init: () => {
+                if (state.isAdmin) {
+                    document.getElementById('admin-login').classList.add('hidden');
+                    document.getElementById('admin-panel').classList.remove('hidden');
+                    admin.loadDashboard();
+                } else {
+                    document.getElementById('admin-login').classList.remove('hidden');
+                    document.getElementById('admin-panel').classList.add('hidden');
+                }
+            },
+            login: (e) => {
+                e.preventDefault();
+                const password = document.getElementById('admin-password').value;
+                if (password === storeData.adminPasswordHash) {
+                    state.isAdmin = true;
+                    sessionStorage.setItem('isAdmin', 'true');
+                    showToast('Acceso concedido');
+                    admin.init();
+                } else {
+                    showToast('Contraseña incorrecta');
+                }
+            },
+            logout: () => {
+                state.isAdmin = false;
+                sessionStorage.removeItem('isAdmin');
+                admin.init();
+            },
+            loadDashboard: () => {
+                document.getElementById('admin-total-products').textContent = storeData.products.length;
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                document.getElementById('admin-total-users').textContent = users.length;
+                document.getElementById('admin-online-users').textContent = Math.floor(Math.random() * 10) + 1;
+                
+                // Populate category select
+                const select = document.querySelector('select[name="category"]');
+                select.innerHTML = '<option value="">Seleccionar categoría</option>' + 
+                    storeData.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+                
+                // Populate products table
+                const tbody = document.getElementById('admin-products-list');
+                tbody.innerHTML = storeData.products.map(p => {
+                    const cat = storeData.categories.find(c => c.id === p.category);
+                    return `
+                        <tr class="border-b border-gold-400/10">
+                            <td class="px-4 py-3">
+                                <div class="flex items-center gap-3">
+                                    <img src="${p.image}" class="w-10 h-10 rounded object-cover">
+                                    <span>${p.name}</span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-gray-400">${cat ? cat.name : p.category}</td>
+                            <td class="px-4 py-3 text-gold-400">${p.price} ${storeData.currency}</td>
+                            <td class="px-4 py-3">
+                                <button onclick="admin.deleteProduct(${p.id})" class="text-red-500 hover:text-red-400">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+                
+                document.getElementById('currency-setting').value = storeData.currency;
+            },
+            showAddProduct: () => {
+                document.getElementById('add-product-form').classList.remove('hidden');
+            },
+            addProduct: (e) => {
+                e.preventDefault();
+                const form = e.target;
+                const newProduct = {
+                    id: Date.now(),
+                    name: form.name.value,
+                    category: form.category.value,
+                    price: parseInt(form.price.value),
+                    image: form.image.value || 'https://picsum.photos/300/300?random=' + Date.now(),
+                    description: form.description.value
+                };
+                
+                storeData.products.push(newProduct);
+                localStorage.setItem('storeData', JSON.stringify(storeData));
+                
+                form.reset();
+                document.getElementById('add-product-form').classList.add('hidden');
+                admin.loadDashboard();
+                showToast('Producto añadido');
+            },
+            deleteProduct: (id) => {
+                if (!confirm('¿Eliminar este producto?')) return;
+                storeData.products = storeData.products.filter(p => p.id !== id);
+                localStorage.setItem('storeData', JSON.stringify(storeData));
+                admin.loadDashboard();
+                showToast('Producto eliminado');
+            },
+            updateCurrency: (currency) => {
+                storeData.currency = currency;
+                localStorage.setItem('storeData', JSON.stringify(storeData));
+                showToast('Moneda actualizada a ' + currency);
+            }
+        };
+
+        // UI Utilities
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').textContent = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Populate category filter
+            const filterSelect = document.getElementById('category-filter');
+            filterSelect.innerHTML += storeData.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            
+            auth.updateUI();
+            cart.updateUI();
+            renderFeaturedProducts();
+            updateStats();
+            
+            // Update stats periodically
+            setInterval(updateStats, 30000);
+        });
+
+        // Prevent leaving page with items in cart
+        window.addEventListener('beforeunload', (e) => {
+            if (state.cart.length > 0) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    </script>
+</body>
+</html>
